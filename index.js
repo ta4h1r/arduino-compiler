@@ -14,7 +14,7 @@ const dbName = 'ctrl-fleet-2';
 main();
 
 async function main() {
-	const pass = await getText();
+	/* const pass = await getText();
 	const uri = process.env.db_url ? `${process.env.db_url}/${dbName}` : `mongodb://ta4h1r:${pass}@sandbox-cluster-0-shard-00-00.2wusu.mongodb.net:27017,sandbox-cluster-0-shard-00-01.2wusu.mongodb.net:27017,sandbox-cluster-0-shard-00-02.2wusu.mongodb.net:27017/${dbName}?ssl=true&replicaSet=sandbox-cluster-0-shard-0&authSource=admin&retryWrites=true&w=majority`;
 	const options = {
 		useUnifiedTopology: true,
@@ -32,7 +32,7 @@ async function main() {
 	if (!db)
 		console.log("Error connecting DB");
 	else
-		console.log("Connected to DB: " + dbName + " at: " + uri);
+		console.log("Connected to DB: " + dbName + " at: " + uri); */
 
 	// Configure bodyparser to handle post requests
 	app.use(bodyParser.urlencoded({

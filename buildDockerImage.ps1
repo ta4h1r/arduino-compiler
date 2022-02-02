@@ -12,4 +12,4 @@ $tag = "v1"
 
 # Basic build and run
 docker build -t ${imageName}:${tag} .
-docker run -itd --name=$containerName --network=$networkName -p ${localPort}:${containerPort} -m 20M ${imageName}:${tag}
+docker run -itd --name=$containerName --network=$networkName -p ${localPort}:${containerPort} --mount type=bind,source="$(pwd)"/,target=/usr/src/app ${imageName}:${tag}
