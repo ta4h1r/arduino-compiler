@@ -17,53 +17,30 @@ router.get('/', (req, res) => {
 });
 
 
-router.route('/ls')
-	.post((req, res) => {
-		exec("ls -la", (error, stdout, stderr) => {
-		if (error) {
-			console.log(`error: ${error.message}`);
-			res.status(500).json({
-				message: "error"
-			})
-			return;
-		}
-		if (stderr) {
-			console.log(`stderr: ${stderr}`);
-			res.status(500).json({
-				message: "stderror"
-			})
-			return;
-		}
-		console.log(`stdout: ${stdout}`);
-		res.status(200).json({
-				stdout: `${stdout}`
-			})
-	});
-});
-	
-
 router.route('/compile')
 	.post(async (req, res) => {
 		console.log("REQ", req.body);
-		
-		const code = req.body?.data?.code; 
-		
-		if(code) {
-			
-			const sketchName = "tmp" + "_" + Date.now(); 
-			const board="uno";
-			
+
+		const code = req.body?.data?.code;
+
+		if (code) {
+
+			const sketchName = "tmp" + "_" + Date.now();
+			const board = "uno";
+
 			// Create a new Arduino sketch 
-			let termOut  = await exec(
+			console.log("\nCreating new Arduino sketch")
+			let termOut = await exec(
 				`arduino-cli sketch new ${sketchName}`
 			);
-			
-			
+
+
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
-						
+			
 			// Write data to sketch file
-			if(!termOut.stderr) {
+			console.log("Writing code to sketch file")
+			if (!termOut.stderr) {
 				termOut = await exec(
 					`echo "${code}" > ${sketchName}/${sketchName}.ino`
 				);
@@ -71,56 +48,60 @@ router.route('/compile')
 
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
-			
-			if(!termOut.stderr) {
+
+			if (!termOut.stderr) {
 				// Compile sketch
+				console.log("Compiling sketch")
 				termOut = await exec(
 					`arduino-cli compile -b arduino:avr:${board} -e /usr/src/app/${sketchName}`
 				);
 			}
-		
+
 
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
-			
+
 			// Read compiled code
-			let hexFileContents;
-			hexFileContents = await getText(`/usr/src/app/${sketchName}/build/arduino.avr.${board}/${sketchName}.ino.hex`);
-			
+			console.log("Reading HEX")
+			let hexFileContents = await getText(`/usr/src/app/${sketchName}/build/arduino.avr.${board}/${sketchName}.ino.hex`);
 
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
-			
-			
+
+
 			// Delete sketch contents 
+			console.log("Deleting temporary sketch file")
 			termOut = await exec(
 				`rm -rf ${sketchName}`
 			);
 
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
-	
-			console.log("HEX:", hexFileContents)
-			if(hexFileContents) {
-				
+
+			if (hexFileContents) {
+				console.log("DONE"); 
+
 				res.status(200).json({
-					message: "Compiled sketch " + sketchName, 
-					data: hexFileContents, 
+					message: "Compiled sketch",
+					sketchName: sketchName,
+					hex: hexFileContents,
 				});
-				
+
 			} else {
+				console.log("FAILED 500")
 				res.status(500).json({
 					message: "Something went wrong"
 				})
 			}
-			
+
 		} else {
+			console.log("FAILED 400")
 			res.status(400).json({
 				message: "Bad request body"
 			})
 		}
-		
-});
+
+	});
 
 function getText(path) {
 	return new Promise((resolve, reject) => {
