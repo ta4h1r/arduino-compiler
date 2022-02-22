@@ -37,7 +37,7 @@ router.route('/compile')
 
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
-			
+
 			// Write data to sketch file
 			console.log("Writing code to sketch file")
 			if (!termOut.stderr) {
@@ -52,16 +52,23 @@ router.route('/compile')
 			if (!termOut.stderr) {
 				// Compile sketch
 				console.log("Compiling sketch")
-				termOut = await exec(
-					`arduino-cli compile -b arduino:avr:${board} -e /usr/src/app/${sketchName}`
-				);
+				try {
+					termOut = await exec(
+						`arduino-cli compile -b arduino:avr:${board} -e /usr/src/app/${sketchName}`
+					);
+				} catch (err) {
+					res.status(400).json({
+						message: "Failed to compile.",
+					})
+					return; 
+				}
 			}
 
 
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
 
-			const compilerMessage = termOut.stdout; 
+			const compilerMessage = termOut.stdout;
 
 			// Read compiled code
 			console.log("Reading HEX")
@@ -81,7 +88,7 @@ router.route('/compile')
 			console.error('stderr:', termOut.stderr);
 
 			if (hexFileContents) {
-				console.log("DONE"); 
+				console.log("DONE");
 
 				res.status(200).json({
 					sketch: sketchName,
@@ -92,7 +99,7 @@ router.route('/compile')
 			} else {
 				console.log("FAILED 500")
 				res.status(500).json({
-					message: "Something went wrong", 
+					message: "Something went wrong",
 					compilerMessage: compilerMessage
 				})
 			}
