@@ -61,6 +61,8 @@ router.route('/compile')
 			console.log('stdout:', termOut.stdout);
 			console.error('stderr:', termOut.stderr);
 
+			const compilerMessage = termOut.stdout; 
+
 			// Read compiled code
 			console.log("Reading HEX")
 			let hexFileContents = await getText(`/usr/src/app/${sketchName}/build/arduino.avr.${board}/${sketchName}.ino.hex`);
@@ -82,15 +84,16 @@ router.route('/compile')
 				console.log("DONE"); 
 
 				res.status(200).json({
-					message: "Compiled sketch",
-					sketchName: sketchName,
+					sketch: sketchName,
+					message: compilerMessage,
 					hex: hexFileContents,
 				});
 
 			} else {
 				console.log("FAILED 500")
 				res.status(500).json({
-					message: "Something went wrong"
+					message: "Something went wrong", 
+					compilerMessage: compilerMessage
 				})
 			}
 
