@@ -59,8 +59,10 @@ router.route('/compile')
 						`arduino-cli compile -b arduino:avr:${board} -e /usr/src/app/${sketchName}`
 					);
 				} catch (err) {
+					console.log("ERR:", err); 
+					err[`${sketchName}`] = code
 					res.status(400).json({
-						message: "Failed to compile.",
+						error: err,
 					})
 					return; 
 				}
@@ -109,7 +111,7 @@ router.route('/compile')
 		} else {
 			console.log("FAILED 400")
 			res.status(400).json({
-				message: "Bad request body"
+				error: "Cannot compile empty sketch."
 			})
 		}
 
