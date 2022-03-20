@@ -1,6 +1,6 @@
 containerName="arduino-compiler"
 networkName="custom0"
-localPort=50000
+hostPort=50000
 containerPort=1000
 imageName="arduino-compiler"
 tag="v1"
@@ -12,4 +12,4 @@ tag="v1"
 
 # Basic build and run
 docker build -t ${imageName}:${tag} .
-docker run -itd --name=$containerName --network=$networkName -p ${localPort}:${containerPort} ${imageName}:${tag}
+docker run -itd --name=$containerName --network=$networkName -p ${hostPort}:${containerPort} ${imageName}:${tag}

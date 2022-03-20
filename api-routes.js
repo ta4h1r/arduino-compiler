@@ -17,6 +17,8 @@ router.get('/', (req, res) => {
 });
 
 
+
+// TODO: Try/catch and throw at strategic points to return errors to client
 router.route('/compile')
 	.post(async (req, res) => {
 		console.log("REQ", req.body);
