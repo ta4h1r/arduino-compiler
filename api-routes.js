@@ -61,7 +61,7 @@ router.route('/compile')
 				} catch (err) {
 					console.log("ERR:", err); 
 					err[`${sketchName}`] = code
-					res.status(400).json({
+					res.status(500).json({
 						error: err,
 					})
 					return; 
