@@ -12,4 +12,4 @@ tag="v1"
 
 # Basic build and run
 docker build -t ${imageName}:${tag} .
-docker run -itd --name=$containerName --network=$networkName -p ${hostPort}:${containerPort} ${imageName}:${tag}
+docker run -itd --name=$containerName -p ${hostPort}:${containerPort} ${imageName}:${tag}
